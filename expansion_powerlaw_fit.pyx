@@ -1,3 +1,11 @@
+#cython: profile=False
+#cython: boundscheck=False
+#cython: initializedcheck=False
+#cython: nonecheck=False
+#cython: wraparound=False
+#cython: cdivision=True
+
+
 import numpy as np
 cimport numpy as np
 
@@ -41,6 +49,7 @@ cpdef double[:, :] extract_powerlaw_oskar(double[:] x, double[:] y):
     cdef double c0, c1, cov00, cov01, cov11, sumsq
 
     cdef int row_count = 0
+
     for window_size in range(2, traj_length):
         # Loop over every possible window of size "window_size"
         for i in range(0, traj_length - window_size):
