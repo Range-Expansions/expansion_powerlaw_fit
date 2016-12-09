@@ -52,20 +52,22 @@ cpdef double[:, :] extract_powerlaw_oskar(double[:] x, double[:] y):
             gsl_fit_linear(&cur_x[0], 1, &cur_y[0], 1, window_size,
                           &c0, &c1, &cov00, &cov01, &cov11, &sumsq)
 
-            y_linear_fit = cur_x.copy()
-            for dd in range(window_size):
-                y_linear_fit[dd] = c0 + c1*cur_x[dd]
-
-            # Rotate both coordinate systems to horizontal...
-            # relative to the starting point of the linear fit
+            # Rotate and translate the coordinate system to the beginning of the contour
             theta = math.atan(c1)
-
-            # Adjust y_linear_fit inplace, but call it something new
-            y_perp = y_linear_fit
+            xo = cur_x[0]
+            yo = c0 + c1*xo # Starting point of the linear fit
 
             cos_theta = math.cos(theta)
+            sin_theta = math.sin(theta)
+
+            x_prime = cur_x.copy()
+            y_prime = cur_y.copy()
             for dd in range(window_size):
-                y_perp[dd] = (cur_y[dd] - y_linear_fit[dd])*cos_theta
+                delta_x = cur_x[dd] - xo
+                delta_y = cur_y[dd] - yo
+
+                x_prime[dd] = delta_x*cos_theta + delta_y*sin_theta
+                y_prime[dd] = -delta_x*sin_theta + delta_y*cos_theta
 
             # Calculate average msq distance, do it in place for speed
             mean_msq = 0
