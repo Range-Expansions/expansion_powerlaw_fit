@@ -33,7 +33,7 @@ cpdef double[:, :] extract_powerlaw_oskar(double[:] x, double[:] y):
     for window_size in range(3, traj_length):
         for i in range(0, traj_length - window_size):
             num_rows += 1
-    output = np.zeros((num_rows, 3), dtype=np.double)
+    output = np.zeros((num_rows, 4), dtype=np.double)
 
     # Loop and fit the slopes
 
@@ -69,16 +69,20 @@ cpdef double[:, :] extract_powerlaw_oskar(double[:] x, double[:] y):
                 x_prime[dd] = delta_x*cos_theta + delta_y*sin_theta
                 y_prime[dd] = -delta_x*sin_theta + delta_y*cos_theta
 
-            # Calculate average msq distance, do it in place for speed
+            # Calculate average msq distance by doing the appropriate integral
             mean_msq = 0
-            for dd in range(window_size):
-                mean_msq += y_perp[dd]**2
-            mean_msq /= window_size
+            for dd in range(window_size - 1):
+                spacing = x_prime[dd+1] - x_prime[dd]
+                mean_msq += 0.5*spacing*(y_prime[dd+1]**2 + y_prime[dd]**2)
+
+            L = x_prime[window_size - 1]
+            mean_msq /= L
             # Get the average msq distance
 
             output[row_count, 0] = i
             output[row_count, 1] = window_size
             output[row_count, 2] = mean_msq
+            output[row_count, 3] = L
             row_count += 1
 
     return output
