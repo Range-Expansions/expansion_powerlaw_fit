@@ -17,10 +17,12 @@ cpdef double[:, :] extract_powerlaw_oskar(double[:] x, double[:] y):
 
     cdef double[:] cur_x
     cdef double[:] cur_y
-    cdef double[:] y_linear_fit
-    cdef double theta, cos_theta
-    cdef double[:] y_perp
+    cdef double theta, cos_theta, sin_theta
+    cdef double xo, yo, delta_x, delta_y
+    cdef double[:] x_prime, y_prime
+    cdef double spacing
     cdef double mean_msq
+    cdef double L
 
     cdef int dd
 
