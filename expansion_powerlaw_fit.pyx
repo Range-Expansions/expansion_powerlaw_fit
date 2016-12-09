@@ -38,7 +38,7 @@ cpdef double[:, :] extract_powerlaw_oskar(double[:] x, double[:] y):
     cdef double[:, :] output
     # Find the output dimensions.
     cdef int num_rows = 0
-    for window_size in range(2, traj_length):
+    for window_size in range(3, traj_length):
         for i in range(0, traj_length - window_size):
             num_rows += 1
     output = np.zeros((num_rows, 3), dtype=np.double)
@@ -50,7 +50,7 @@ cpdef double[:, :] extract_powerlaw_oskar(double[:] x, double[:] y):
 
     cdef int row_count = 0
 
-    for window_size in range(2, traj_length):
+    for window_size in range(3, traj_length):
         # Loop over every possible window of size "window_size"
         for i in range(0, traj_length - window_size):
             cur_x = x[i:(i+window_size)]
