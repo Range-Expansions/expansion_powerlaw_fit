@@ -5,7 +5,7 @@ from cython_gsl cimport *
 
 cimport libc.math as math
 
-cpdef double[:, :] extract_powerlaw_oskar(double[:] x, double[:] y):
+cpdef extract_powerlaw_oskar(double[:] x, double[:] y):
     """Extract a powerlaw from a x, y trajectory using the procedure
     described in the 2007 PNAS paper."""
 
@@ -78,6 +78,10 @@ cpdef double[:, :] extract_powerlaw_oskar(double[:] x, double[:] y):
                 mean_msq += 0.5*spacing*(y_prime[dd+1]**2 + y_prime[dd]**2)
 
             L = x_prime[window_size - 1]
+            if L < 0:
+                print 'L is less than zero...oh dear'
+                print L
+                return cur_x, cur_y, x_prime, y_prime, i, window_size, c1, c0
             mean_msq /= L
             # Get the average msq distance
 
