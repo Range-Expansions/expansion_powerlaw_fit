@@ -56,6 +56,8 @@ cpdef extract_powerlaw_oskar(double[:] x, double[:] y):
 
             # Rotate and translate the coordinate system to the beginning of the contour
             theta = math.atan(c1)
+            # Be careful...to determine xo & yo, have to extend the start and
+            # end points perpendicular to the line of best fit
             xo = cur_x[0]
             yo = c0 + c1*xo # Starting point of the linear fit
 
