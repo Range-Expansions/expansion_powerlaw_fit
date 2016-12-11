@@ -83,6 +83,11 @@ cpdef extract_powerlaw_oskar(double[:] x, double[:] y):
             x_prime = x_prime_sorted
             y_prime = y_prime_sorted
 
+            # TODO: Adjust y so that it levels around zero! Probably by fixing y_o
+            xo = x_prime[0]
+            for dd in range(window_size):
+                x_prime[dd] -= xo
+
             # Calculate average msq distance by doing the appropriate integral
             mean_msq = 0
             for dd in range(window_size - 1):
@@ -91,10 +96,10 @@ cpdef extract_powerlaw_oskar(double[:] x, double[:] y):
 
             # x' doesn't go between zero and one actually
             L = x_prime[window_size - 1] - x_prime[0]
-            #if (L > 50) and (window_size > 30):
-            #    print 'L is less than zero...oh dear'
-            #    print L
-            #    return cur_x, cur_y, x_prime, y_prime, i, window_size, c1, c0
+            if (L > 50) and (window_size > 50):
+               print 'L is less than zero...oh dear'
+               print L
+               return cur_x, cur_y, x_prime, y_prime, i, window_size, c1, c0
             mean_msq /= L
             # Get the average msq distance
 
