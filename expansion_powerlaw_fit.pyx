@@ -18,8 +18,9 @@ cpdef extract_powerlaw_oskar(double[:] x, double[:] y):
     cdef double[:] cur_x
     cdef double[:] cur_y
     cdef double theta, cos_theta, sin_theta
-    cdef double xo, yo, delta_x, delta_y
-    cdef double[:] x_prime, y_prime
+    cdef double x_temp, y_temp
+    cdef double[:] x_prime, y_prime, x_prime_sorted, y_prime_sorted
+    cdef size_t[:] sort_order = np.zeros(traj_length, dtype=np.uintp)
     cdef double spacing
     cdef double mean_msq
     cdef double L
@@ -69,6 +70,15 @@ cpdef extract_powerlaw_oskar(double[:] x, double[:] y):
 
                 x_prime[dd] = x_temp*cos_theta - y_temp*sin_theta
                 y_prime[dd] = x_temp*sin_theta + y_temp*cos_theta
+
+            # Sort xprime and yprime. This appears to be the only way to correct for
+            # pathologies...
+            gsl_sort_index(&sort_order[0], &x_prime[0], 1, window_size)
+            x_prime_sorted = x_prime.copy()
+            y_prime_sorted = y_prime.copy()
+            for dd in range(window_size):
+                x_prime_sorted[dd] = x_prime[sort_order[dd]]
+                y_prime_sorted[dd] = y_prime[sort_order[dd]]
 
             # Calculate average msq distance by doing the appropriate integral
             mean_msq = 0
