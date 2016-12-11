@@ -83,23 +83,20 @@ cpdef extract_powerlaw_oskar(double[:] x, double[:] y):
             x_prime = x_prime_sorted
             y_prime = y_prime_sorted
 
-            # Adjust y_prime so that it is the distance from the best fit line
-            xo = cur_x[sort_order[0]]
-            yo = cur_y[sort_order[0]]
-            delta_y =yo - (c0 + c1*xo)
-            # Change delta_y to y_perp; it doesn't matter if theta is positive
-            # or negative due to cos symmetry
-            y_perp = delta_y*cos_theta
-            # Get the offset
-            yo_prime = y_perp - y_prime[0]
+            # Shift a point on the best fit line such that the best fit line lies along
+            # the horizontal
 
-            for dd in range(window_size):
-                y_prime[dd] += yo_prime
+            xo_fit = cur_x[sort_order[0]]
+            yo_fit = c0 + c1*xo_fit
 
-            # Adjust x_prime so that it goes from 0 to L
-            xo_prime = x_prime[0]
+            # Transform like everything else
+            xo_fit_prime = xo_fit*cos_theta - yo_fit*sin_theta
+            yo_fit_prime = xo_fit*sin_theta + yo_fit*cos_theta
+
+            # Make this point lie at 0, 0
             for dd in range(window_size):
-                x_prime[dd] -= xo_prime
+                x_prime[dd] -= xo_fit_prime
+                y_prime[dd] -= yo_fit_prime
 
             # Calculate average msq distance by doing the appropriate integral
             mean_msq = 0
@@ -108,7 +105,7 @@ cpdef extract_powerlaw_oskar(double[:] x, double[:] y):
                 mean_msq += 0.5*spacing*(y_prime[dd+1]**2 + y_prime[dd]**2)
 
             # x' doesn't go between zero and one actually
-            L = x_prime[window_size - 1]
+            L = x_prime[window_size - 1] - x_prime[0]
             if (L > 50) and (window_size > 50):
               print 'L is less than zero...oh dear'
               print L
