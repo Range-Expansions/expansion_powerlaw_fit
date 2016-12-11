@@ -83,10 +83,23 @@ cpdef extract_powerlaw_oskar(double[:] x, double[:] y):
             x_prime = x_prime_sorted
             y_prime = y_prime_sorted
 
-            # TODO: Adjust y so that it levels around zero! Probably by fixing y_o
-            xo = x_prime[0]
+            # Adjust y_prime so that it is the distance from the best fit line
+            xo = cur_x[sort_order[0]]
+            yo = cur_y[sort_order[0]]
+            delta_y =yo - (c0 + c1*xo)
+            # Change delta_y to y_perp; it doesn't matter if theta is positive
+            # or negative due to cos symmetry
+            y_perp = delta_y*cos_theta
+            # Get the offset
+            yo_prime = y_perp - y_prime[0]
+
             for dd in range(window_size):
-                x_prime[dd] -= xo
+                y_prime[dd] += yo_prime
+
+            # Adjust x_prime so that it goes from 0 to L
+            xo_prime = x_prime[0]
+            for dd in range(window_size):
+                x_prime[dd] -= xo_prime
 
             # Calculate average msq distance by doing the appropriate integral
             mean_msq = 0
@@ -95,11 +108,15 @@ cpdef extract_powerlaw_oskar(double[:] x, double[:] y):
                 mean_msq += 0.5*spacing*(y_prime[dd+1]**2 + y_prime[dd]**2)
 
             # x' doesn't go between zero and one actually
-            L = x_prime[window_size - 1] - x_prime[0]
-            if (L > 50) and (window_size > 50):
-               print 'L is less than zero...oh dear'
-               print L
-               return cur_x, cur_y, x_prime, y_prime, i, window_size, c1, c0
+            L = x_prime[window_size - 1]
+            # if (L > 50) and (window_size > 50):
+            #   print 'L is less than zero...oh dear'
+            #   print L
+            #   return cur_x, cur_y, x_prime, y_prime, i, window_size, c1, c0
+            if (L < 0):
+              print 'L is less than zero...oh dear'
+              print L
+              return cur_x, cur_y, x_prime, y_prime, i, window_size, c1, c0
             mean_msq /= L
             # Get the average msq distance
 
