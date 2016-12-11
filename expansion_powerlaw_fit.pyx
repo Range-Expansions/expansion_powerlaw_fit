@@ -20,7 +20,7 @@ cpdef extract_powerlaw_oskar(double[:] x, double[:] y):
     cdef double theta, cos_theta, sin_theta
     cdef double x_temp, y_temp
     cdef double[:] x_prime, y_prime, x_prime_sorted, y_prime_sorted
-    cdef size_t[:] sort_order = np.zeros(traj_length, dtype=np.uintp)
+    cdef size_t[:] sort_order = np.zeros(traj_length, dtype=np.uint)
     cdef double spacing
     cdef double mean_msq
     cdef double L
@@ -79,6 +79,9 @@ cpdef extract_powerlaw_oskar(double[:] x, double[:] y):
             for dd in range(window_size):
                 x_prime_sorted[dd] = x_prime[sort_order[dd]]
                 y_prime_sorted[dd] = y_prime[sort_order[dd]]
+
+            x_prime = x_prime_sorted
+            y_prime = y_prime_sorted
 
             # Calculate average msq distance by doing the appropriate integral
             mean_msq = 0
