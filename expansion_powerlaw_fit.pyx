@@ -54,24 +54,21 @@ cpdef extract_powerlaw_oskar(double[:] x, double[:] y):
             gsl_fit_linear(&cur_x[0], 1, &cur_y[0], 1, window_size,
                           &c0, &c1, &cov00, &cov01, &cov11, &sumsq)
 
-            # Rotate and translate the coordinate system to the beginning of the contour
-            theta = math.atan(c1)
-            # Be careful...to determine xo & yo, have to extend the start and
-            # end points perpendicular to the line of best fit
-            xo = cur_x[0]
-            yo = c0 + c1*xo # Starting point of the linear fit
+            # Rotate the coordinate system clockwise
+            theta = -math.atan2(c1, 1) # You rise c1 over a distance of 1
 
+            # Rotate clockwise
             cos_theta = math.cos(theta)
             sin_theta = math.sin(theta)
 
             x_prime = cur_x.copy()
             y_prime = cur_y.copy()
             for dd in range(window_size):
-                delta_x = cur_x[dd] - xo
-                delta_y = cur_y[dd] - yo
+                x_temp = cur_x[dd]
+                y_temp = cur_y[dd]
 
-                x_prime[dd] = delta_x*cos_theta + delta_y*sin_theta
-                y_prime[dd] = -delta_x*sin_theta + delta_y*cos_theta
+                x_prime[dd] = x_temp*cos_theta - y_temp*sin_theta
+                y_prime[dd] = x_temp*sin_theta + y_temp*cos_theta
 
             # Calculate average msq distance by doing the appropriate integral
             mean_msq = 0
@@ -79,7 +76,8 @@ cpdef extract_powerlaw_oskar(double[:] x, double[:] y):
                 spacing = x_prime[dd+1] - x_prime[dd]
                 mean_msq += 0.5*spacing*(y_prime[dd+1]**2 + y_prime[dd]**2)
 
-            L = x_prime[window_size - 1]
+            # x' doesn't go between zero and one actually
+            L = x_prime[window_size - 1] - x_prime[0]
             if L < 0:
                 print 'L is less than zero...oh dear'
                 print L
