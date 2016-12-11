@@ -91,10 +91,10 @@ cpdef extract_powerlaw_oskar(double[:] x, double[:] y):
 
             # x' doesn't go between zero and one actually
             L = x_prime[window_size - 1] - x_prime[0]
-            if L < 0:
-                print 'L is less than zero...oh dear'
-                print L
-                return cur_x, cur_y, x_prime, y_prime, i, window_size, c1, c0
+            #if (L > 50) and (window_size > 30):
+            #    print 'L is less than zero...oh dear'
+            #    print L
+            #    return cur_x, cur_y, x_prime, y_prime, i, window_size, c1, c0
             mean_msq /= L
             # Get the average msq distance
 
