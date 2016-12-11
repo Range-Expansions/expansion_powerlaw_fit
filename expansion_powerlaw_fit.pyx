@@ -19,6 +19,7 @@ cpdef extract_powerlaw_oskar(double[:] x, double[:] y):
     cdef double[:] cur_y
     cdef double theta, cos_theta, sin_theta
     cdef double x_temp, y_temp
+    cdef double xo_fit, yo_fit, xo_fit_prime, yo_fit_prime
     cdef double[:] x_prime, y_prime, x_prime_sorted, y_prime_sorted
     cdef size_t[:] sort_order = np.zeros(traj_length, dtype=np.uint)
     cdef double spacing
