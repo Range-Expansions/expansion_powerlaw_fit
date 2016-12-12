@@ -24,7 +24,7 @@ cpdef extract_powerlaw_oskar(double[:] x, double[:] y):
     cdef size_t[:] sort_order = np.zeros(traj_length, dtype=np.uint)
     cdef double spacing
     cdef double mean_msq
-    cdef double L
+    cdef double L, cur_xprime, min_xprime, max_xprime
 
     cdef int dd
 
@@ -104,8 +104,20 @@ cpdef extract_powerlaw_oskar(double[:] x, double[:] y):
             L = 0.0
             for dd in range(window_size - 1):
                 spacing = math.fabs(x_prime[dd+1] - x_prime[dd])
+                #spacing = x_prime[dd+1] - x_prime[dd]
                 L += spacing
                 mean_msq += 0.5*spacing*(y_prime[dd+1]**2 + y_prime[dd]**2)
+
+            # Get the minimum and maximum xprime along the way
+            # min_xprime = x_prime[0]
+            # max_xprime = x_prime[0]
+            # for dd in range(window_size):
+            #     cur_xprime = x_prime[dd]
+            #     if cur_xprime < min_xprime:
+            #         min_xprime = cur_xprime
+            #     if cur_xprime > max_xprime:
+            #         max_xprime = cur_xprime
+            # L = max_xprime - min_xprime
 
             # if (L > 50) and (window_size > 50):
             #   print 'L is less than zero...oh dear'
