@@ -74,15 +74,15 @@ cpdef extract_powerlaw_oskar(double[:] x, double[:] y):
 
             # Sort xprime and yprime. This appears to be the only way to correct for
             # pathologies...
-            gsl_sort_index(&sort_order[0], &x_prime[0], 1, window_size)
-            x_prime_sorted = x_prime.copy()
-            y_prime_sorted = y_prime.copy()
-            for dd in range(window_size):
-                x_prime_sorted[dd] = x_prime[sort_order[dd]]
-                y_prime_sorted[dd] = y_prime[sort_order[dd]]
+            # gsl_sort_index(&sort_order[0], &x_prime[0], 1, window_size)
+            # x_prime_sorted = x_prime.copy()
+            # y_prime_sorted = y_prime.copy()
+            # for dd in range(window_size):
+            #     x_prime_sorted[dd] = x_prime[sort_order[dd]]
+            #     y_prime_sorted[dd] = y_prime[sort_order[dd]]
 
-            x_prime = x_prime_sorted
-            y_prime = y_prime_sorted
+            # y_prime = y_prime_sorted
+            # x_prime = x_prime_sorted
 
             # Shift a point on the best fit line such that the best fit line lies along
             # the horizontal
@@ -100,13 +100,13 @@ cpdef extract_powerlaw_oskar(double[:] x, double[:] y):
                 y_prime[dd] -= yo_fit_prime
 
             # Calculate average msq distance by doing the appropriate integral
-            mean_msq = 0
+            mean_msq = 0.0
+            L = 0.0
             for dd in range(window_size - 1):
-                spacing = x_prime[dd+1] - x_prime[dd]
+                spacing = math.fabs(x_prime[dd+1] - x_prime[dd])
+                L += spacing
                 mean_msq += 0.5*spacing*(y_prime[dd+1]**2 + y_prime[dd]**2)
 
-            # x' doesn't go between zero and one actually
-            L = x_prime[window_size - 1] - x_prime[0]
             # if (L > 50) and (window_size > 50):
             #   print 'L is less than zero...oh dear'
             #   print L
