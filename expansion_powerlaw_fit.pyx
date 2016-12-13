@@ -44,8 +44,8 @@ cpdef double[:, :] extract_powerlaw_oskar(double[:] x, double[:] y):
     cdef int row_count = 0
 
     for window_size in range(3, traj_length):
-        # Loop over every possible window of size "window_size"
-        for i in range(0, traj_length - window_size):
+        # Loop over non-overlapping windows of size "window_size"
+        for i in range(0, traj_length - window_size, window_size):
             cur_x = x[i:(i+window_size)]
             cur_y = y[i:(i+window_size)]
 
