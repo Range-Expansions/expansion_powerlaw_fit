@@ -32,7 +32,7 @@ cpdef double[:, :] extract_powerlaw_oskar(double[:] x, double[:] y):
     # Find the output dimensions.
     cdef int num_rows = 0
     for window_size in range(3, traj_length):
-        for i in range(0, traj_length - window_size):
+        for i in range(0, traj_length - window_size, window_size):
             num_rows += 1
     output = np.zeros((num_rows, 3), dtype=np.double)
 
@@ -67,7 +67,7 @@ cpdef double[:, :] extract_powerlaw_oskar(double[:] x, double[:] y):
             mean_msq = 0
             for dd in range(window_size):
                 mean_msq += y_perp[dd]**2
-            mean_msq /= window_size
+            mean_msq /= float(window_size)
             # Get the average msq distance
 
             output[row_count, 0] = i
