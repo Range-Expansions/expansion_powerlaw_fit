@@ -1,0 +1,6 @@
+*.c
+*.egg-info/
+*.html
+*.so
+build/
+.idea/
